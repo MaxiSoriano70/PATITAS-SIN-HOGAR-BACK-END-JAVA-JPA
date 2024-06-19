@@ -1,47 +1,49 @@
 package patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.implementacion;
 
 import org.springframework.stereotype.Service;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.dao.IDao;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.model.Usuario;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.entity.Usuario;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.repository.IUsuarioRepository;
 import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.IUsuarioService;
 
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UsuarioService implements IUsuarioService {
-    private IDao<Usuario> usuarioIDao;
+    private IUsuarioRepository usuarioRepository;
 
-    public UsuarioService(IDao<Usuario> usuarioIDao) {
-        this.usuarioIDao = usuarioIDao;
+    public UsuarioService(IUsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
     public Usuario registrar(Usuario usuario) {
-        return this.usuarioIDao.registrar(usuario);
+        return this.usuarioRepository.save(usuario);
     }
 
     @Override
-    public Usuario buscarPorId(Integer id) {
-        return this.usuarioIDao.buscarPorId(id);
+    public Optional<Usuario> buscarPorId(Integer id) {
+        return this.usuarioRepository.findById(id);
     }
 
     @Override
-    public Usuario buscarPorCampo(String campo) {
-        return this.usuarioIDao.buscarPorCampo(campo);
+    public Optional<Usuario> buscarPorCampo(String campo) {
+        return null;
     }
 
     @Override
     public List<Usuario> traerTodos() {
-        return this.usuarioIDao.traerTodos();
+        return this.usuarioRepository.findAll();
     }
 
     @Override
     public void actualizar(Usuario usuario){
-        this.usuarioIDao.actualizar(usuario);
+        this.usuarioRepository.save(usuario);
     }
 
     @Override
     public void eliminar(Integer id) {
-        this.usuarioIDao.eliminar(id);
+        this.usuarioRepository.deleteById(id);
     }
 }

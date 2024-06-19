@@ -3,10 +3,11 @@ package patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.model.Adopcion;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.entity.Adopcion;
 import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.IAdopcionService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/adopcion")
@@ -30,9 +31,10 @@ public class AdopcionController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<Adopcion> buscarAdopcionPorId(@PathVariable Integer id){
-        Adopcion adopcion = adopcionService.buscarPorId(id);
-        if(adopcion != null){
-            return ResponseEntity.ok(adopcion);
+        Optional<Adopcion> adopcion = adopcionService.buscarPorId(id);
+        if(adopcion.isPresent()){
+            Adopcion adopcionARetornar = adopcion.get();
+            return ResponseEntity.ok(adopcionARetornar);
         }
         else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -40,21 +42,23 @@ public class AdopcionController {
     }
     @PutMapping
     public ResponseEntity<String> actualizarAdopcion(@RequestBody Adopcion adopcion){
-        if (adopcionService.buscarPorId(adopcion.getId()) == null) {
-            return new ResponseEntity<>("{\"message\": \"adopcion no encontrada\"}", HttpStatus.NOT_FOUND);
-        } else {
+        Optional<Adopcion> adopcionOptional = adopcionService.buscarPorId(adopcion.getId());
+        if (adopcionOptional.isPresent()) {
             adopcionService.actualizar(adopcion);
             return ResponseEntity.ok("{\"message\": \"adopcion modificada\"}");
+        } else {
+            return new ResponseEntity<>("{\"message\": \"adopcion no encontrada\"}", HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> borrarAdopcion(@PathVariable Integer id){
-        if (adopcionService.buscarPorId(id) == null) {
-            return new ResponseEntity<>("{\"message\": \"adopcion no encontrada\"}", HttpStatus.NOT_FOUND);
-        } else {
+        Optional<Adopcion> adopcionOptional = adopcionService.buscarPorId(id);
+        if (adopcionOptional.isPresent()) {
             adopcionService.eliminar(id);
             return ResponseEntity.ok("{\"message\": \"adopcion eliminada\"}");
+        } else {
+            return new ResponseEntity<>("{\"message\": \"adopcion no encontrada\"}", HttpStatus.NOT_FOUND);
         }
     }
 }

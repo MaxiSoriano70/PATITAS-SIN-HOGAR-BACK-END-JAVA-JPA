@@ -1,46 +1,48 @@
 package patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.implementacion;
 
 import org.springframework.stereotype.Service;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.dao.IDao;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.model.Adopcion;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.entity.Adopcion;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.repository.IAdopcionRepository;
 import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.IAdopcionService;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class AdopcionService implements IAdopcionService {
-    private IDao<Adopcion> adopcionIDao;
+    private IAdopcionRepository adopcionRepository;
 
-    public AdopcionService(IDao<Adopcion> adopcionIDao) {
-        this.adopcionIDao = adopcionIDao;
+    public AdopcionService(IAdopcionRepository adopcionRepository) {
+        this.adopcionRepository = adopcionRepository;
     }
 
     @Override
     public Adopcion registrar(Adopcion adopcion) {
-        return this.adopcionIDao.registrar(adopcion);
+        return this.adopcionRepository.save(adopcion);
     }
 
     @Override
-    public Adopcion buscarPorId(Integer id) {
-        return this.adopcionIDao.buscarPorId(id);
+    public Optional<Adopcion> buscarPorId(Integer id) {
+        return this.adopcionRepository.findById(id);
     }
 
     @Override
-    public Adopcion buscarPorCampo(String campo) {
+    public Optional<Adopcion> buscarPorCampo(String campo) {
         return null;
     }
 
     @Override
     public List<Adopcion> traerTodos() {
-        return this.adopcionIDao.traerTodos();
+        return this.adopcionRepository.findAll();
     }
 
     @Override
     public void actualizar(Adopcion adopcion) {
-        this.adopcionIDao.actualizar(adopcion);
+        this.adopcionRepository.save(adopcion);
     }
 
     @Override
     public void eliminar(Integer id) {
-        this.adopcionIDao.eliminar(id);
+        this.adopcionRepository.deleteById(id);
     }
 }

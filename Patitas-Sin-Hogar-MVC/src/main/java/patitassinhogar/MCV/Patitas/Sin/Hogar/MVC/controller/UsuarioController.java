@@ -3,10 +3,11 @@ package patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.model.Usuario;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.entity.Usuario;
 import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.IUsuarioService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuario")
@@ -34,9 +35,10 @@ public class UsuarioController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable Integer id){
-        Usuario usuario = usuarioService.buscarPorId(id);
-        if(usuario != null){
-            return ResponseEntity.ok(usuario);
+        Optional<Usuario> usuario = usuarioService.buscarPorId(id);
+        if(usuario.isPresent()){
+            Usuario usuarioARetornar = usuario.get();
+            return ResponseEntity.ok(usuarioARetornar);
         }
         else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -44,21 +46,23 @@ public class UsuarioController {
     }
     @PutMapping
     public ResponseEntity<String> actualizarUsuario(@RequestBody Usuario usuario){
-        if (usuarioService.buscarPorId(usuario.getId()) == null) {
-            return new ResponseEntity<>("{\"message\": \"usuario no encontrado\"}", HttpStatus.NOT_FOUND);
-        } else {
+        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(usuario.getId());
+        if (usuarioOptional.isPresent()) {
             usuarioService.actualizar(usuario);
             return ResponseEntity.ok("{\"message\": \"usuario modificado\"}");
+        } else {
+            return new ResponseEntity<>("{\"message\": \"usuario no encontrado\"}", HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> borrarUsuario(@PathVariable Integer id){
-        if (usuarioService.buscarPorId(id) == null) {
-            return new ResponseEntity<>("{\"message\": \"usuario no encontrado\"}", HttpStatus.NOT_FOUND);
-        } else {
+        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(id);
+        if (usuarioOptional.isPresent()) {
             usuarioService.eliminar(id);
             return ResponseEntity.ok("{\"message\": \"usuario eliminado\"}");
+        } else {
+            return new ResponseEntity<>("{\"message\": \"usuario no encontrado\"}", HttpStatus.NOT_FOUND);
         }
     }
 }

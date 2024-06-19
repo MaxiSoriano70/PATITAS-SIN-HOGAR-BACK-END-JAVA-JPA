@@ -3,10 +3,11 @@ package patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.model.Mascota;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.entity.Mascota;
 import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.IMascotaService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/mascota")
@@ -32,9 +33,10 @@ public class MascotaController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<Mascota> buscarMascotaPorId(@PathVariable Integer id){
-        Mascota mascota = mascotaService.buscarPorId(id);
-        if(mascota != null){
-            return ResponseEntity.ok(mascota);
+        Optional<Mascota> mascota = mascotaService.buscarPorId(id);
+        if(mascota.isPresent()){
+            Mascota mascotaARetornar = mascota.get();
+            return ResponseEntity.ok(mascotaARetornar);
         }
         else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -42,20 +44,22 @@ public class MascotaController {
     }
     @PutMapping
     public ResponseEntity<String> actualizarMascota(@RequestBody Mascota mascota){
-        if (mascotaService.buscarPorId(mascota.getId()) == null) {
-            return new ResponseEntity<>("{\"message\": \"mascota no encontrada\"}", HttpStatus.NOT_FOUND);
-        } else {
+        Optional<Mascota> mascotaOptional = mascotaService.buscarPorId(mascota.getId());
+        if (mascotaOptional.isPresent()) {
             mascotaService.actualizar(mascota);
             return ResponseEntity.ok("{\"message\": \"mascota modificada\"}");
+        } else {
+            return new ResponseEntity<>("{\"message\": \"mascota no encontrada\"}", HttpStatus.NOT_FOUND);
         }
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> borrarMascota(@PathVariable Integer id){
-        if (mascotaService.buscarPorId(id) == null) {
-            return new ResponseEntity<>("{\"message\": \"mascota no encontrada\"}", HttpStatus.NOT_FOUND);
-        } else {
+        Optional<Mascota> mascotaOptional = mascotaService.buscarPorId(id);
+        if (mascotaOptional.isPresent()) {
             mascotaService.eliminar(id);
             return ResponseEntity.ok("{\"message\": \"mascota eliminada\"}");
+        } else {
+            return new ResponseEntity<>("{\"message\": \"mascota no encontrada\"}", HttpStatus.NOT_FOUND);
         }
     }
 }

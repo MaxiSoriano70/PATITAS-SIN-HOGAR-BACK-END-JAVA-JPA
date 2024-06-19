@@ -2,47 +2,48 @@ package patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.implementacion;
 
 
 import org.springframework.stereotype.Service;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.dao.IDao;
-import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.model.Mascota;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.entity.Mascota;
+import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.repository.IMascotaRepository;
 import patitassinhogar.MCV.Patitas.Sin.Hogar.MVC.service.IMascotaService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MascotaService implements IMascotaService {
-    private IDao<Mascota> mascotaIDao;
+    private IMascotaRepository mascotaRepository;
 
-    public MascotaService(IDao<Mascota> mascotaIDao) {
-        this.mascotaIDao = mascotaIDao;
+    public MascotaService(IMascotaRepository mascotaRepository) {
+        this.mascotaRepository = mascotaRepository;
     }
 
     @Override
     public Mascota registrar(Mascota mascota) {
-        return this.mascotaIDao.registrar(mascota);
+        return this.mascotaRepository.save(mascota);
     }
 
     @Override
-    public Mascota buscarPorId(Integer id) {
-        return this.mascotaIDao.buscarPorId(id);
+    public Optional<Mascota> buscarPorId(Integer id) {
+        return this.mascotaRepository.findById(id);
     }
 
     @Override
-    public Mascota buscarPorCampo(String campo) {
-        return this.mascotaIDao.buscarPorCampo(campo);
+    public Optional<Mascota> buscarPorCampo(String campo) {
+        return null;
     }
 
     @Override
     public List<Mascota> traerTodos() {
-        return this.mascotaIDao.traerTodos();
+        return this.mascotaRepository.findAll();
     }
 
     @Override
     public void actualizar(Mascota mascota) {
-        this.mascotaIDao.actualizar(mascota);
+        this.mascotaRepository.save(mascota);
     }
 
     @Override
     public void eliminar(Integer id) {
-        this.mascotaIDao.eliminar(id);
+        this.mascotaRepository.deleteById(id);
     }
 }
